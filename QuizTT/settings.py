@@ -89,6 +89,7 @@ ALLOWED_HOSTS = ["127.0.0.1", env("HOST")]
 # Application definition
 
 INSTALLED_APPS = [
+    'quiz',
     'authsys',
     'drf_spectacular',
     'django.contrib.admin',
