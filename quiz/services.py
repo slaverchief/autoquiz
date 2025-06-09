@@ -2,6 +2,7 @@ import csv
 import typing
 from io import TextIOWrapper
 from django.core.files import File
+from .models import *
 
 def accept_and_decode_csv(csv_file: File) -> typing.Optional[list]:
     """
@@ -11,8 +12,34 @@ def accept_and_decode_csv(csv_file: File) -> typing.Optional[list]:
         return
     try:
         decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
-        reader = csv.reader(decoded_file)
-        rows = [row for row in reader][1:]
-        return rows
+        reader = csv.DictReader(decoded_file)
+        data = []
+        for row in reader:
+            title = row['test_title']
+            question_text = row['question_text']
+            question_type = row["question_type"]
+            choices = row['choices'].split("|")
+            correct_answers = row['correct_answers'].split("|")
+            data.append((title, question_text, question_type, choices, correct_answers))
+        return data
     except:
         return
+
+def create_question(quiz: Quiz, text: str, qtype: int, choices: list[str], corrects: list[str]):
+    corrects = set(corrects) # переводим в тип сет для ускорения(поиск в сете ведётся за O(1))
+    question = Question.objects.create(content=text, quiz=quiz, type=qtype)
+    for choice in choices:
+        c = Choice.objects.create(text=choice)
+        if choice in corrects:
+            c.is_correct = True
+        c.save()
+        question.choices.add(c)
+
+def create_quiz(data):
+    quiz = Quiz.objects.create(name=data[0][0])  # вынимаем test_title
+    for vals in data:
+        text = vals[1]
+        qtype = int(vals[2])
+        choices = vals[3]
+        corrects = vals[4]
+        create_question(quiz, text, qtype, choices, corrects)

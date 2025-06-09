@@ -2,6 +2,7 @@ from django.contrib.auth.models import UserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password
 from django.apps import apps
+from django.db import models
 
 
 class CustomManager(UserManager):

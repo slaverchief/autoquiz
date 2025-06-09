@@ -1,8 +1,10 @@
+from django.db import transaction
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse
 
-from quiz.services import accept_and_decode_csv
+from QuizTT.exceptions import InvalidQuizData
+from quiz.services import accept_and_decode_csv, create_quiz
 
 
 class UploadCSVView(View):
@@ -17,7 +19,11 @@ class UploadCSVView(View):
         if 'csv_file' not in request.FILES:
             return HttpResponse(status=400)
         csv_file = request.FILES['csv_file']
-        data = accept_and_decode_csv(csv_file)
+        try:
+            with transaction.atomic():  # объявляем транзакцию для создания тестирования
+                create_quiz(accept_and_decode_csv(csv_file))
+        except Exception as e:
+            raise InvalidQuizData()
         return HttpResponse()
 
 
