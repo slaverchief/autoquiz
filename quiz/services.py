@@ -98,7 +98,8 @@ def count_grade(quiz_pk: int, user: CustomUser):
         quiz.users_passed.add(user)
     questions = quiz.questions.all()
     perfect_sum = len(questions)*1
-    objects = QuestionUser.objects.filter(user=user, question__in=questions).select_related("question").prefetch_related('answers').annotate(Count("answers"))
+    # используем prefetch_related, так как дальше проходимся по списку объектов: их надо выгрузить заранее
+    objects = QuestionUser.objects.filter(user=user, question__in=questions).prefetch_related('answers').annotate(Count("answers"))
     reached_sum = 0
     for qs in objects:
         correct_amount = 0

@@ -108,8 +108,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'QuizTT.middlewares.CustomExceptionsHandler'
 ]
+# добавляем middleware для обработки исключения, если отключен дебагд
+if not DEBUG:
+    MIDDLEWARE.append('QuizTT.middlewares.CustomExceptionsHandler')
+
 
 ROOT_URLCONF = 'QuizTT.urls'
 

@@ -88,7 +88,6 @@ class GetAnswersView(APIView):
     """
     Эндроинт для получения конкретного объекта тестирования вместе с ответами на вопрос от запросившего пользователя
     """
-    serializer_class = QuizWithAnswersSerializer
     permission_classes = (IsAuthenticated, )
     @extend_schema(parameters=[QUIZ_PK_PARAM])
     def get(self, request, pk: str):
