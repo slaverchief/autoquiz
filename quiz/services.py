@@ -2,6 +2,8 @@ import csv
 import typing
 from io import TextIOWrapper
 from django.core.files import File
+from django.db.models import Count
+
 from .models import *
 from .serializers import QuizWithAnswersSerializer
 
@@ -37,11 +39,10 @@ def create_question(quiz: Quiz, text: str, qtype: int, choices: list[str], corre
     corrects = set(corrects) # переводим в тип сет для ускорения(поиск в сете ведётся за O(1))
     question = Question.objects.create(content=text, quiz=quiz, type=qtype)
     for choice in choices:
-        c = Choice.objects.create(text=choice)
+        c = Choice.objects.create(text=choice, question=question)
         if choice in corrects:
             c.is_correct = True
         c.save()
-        question.choices.add(c)
 
 def create_quiz(data: list):
     """
@@ -70,6 +71,7 @@ def make_a_choice(data: dict, user: CustomUser):
     m.answers.set(data['answers'])
     m.save()
 
+
 def get_quiz_with_answers(quiz_pk: int, user: CustomUser):
     """
     выполняет выборку с объектом тестирования и ответами на его вопросы
@@ -79,3 +81,24 @@ def get_quiz_with_answers(quiz_pk: int, user: CustomUser):
     qs = QuestionUser.objects.filter(user=user, question__in=questions)
     s = QuizWithAnswersSerializer({"quiz": quiz, "questions": qs})
     return s.data
+
+def count_grade(quiz_pk: int, user: CustomUser):
+    """
+    Подсчёт оценки для конкретного пользователя на конкретном тесте.
+    Алгоритм работает так, что сначала подсчитывается достигнутая
+    сумма - сумма отношений количества правильных ответов на общее количество ответов.
+    Достигнутая сумма делится на количество вопросов в тесте, умножается на 100 и округляется до 2 знаков.
+    """
+    quiz = Quiz.objects.get(pk=quiz_pk)
+    questions = quiz.questions.all()
+    perfect_sum = len(questions)*1
+    objects = QuestionUser.objects.filter(user=user, question__in=questions).select_related("question").prefetch_related('answers').annotate(Count("answers"))
+    reached_sum = 0
+    for qs in objects:
+        correct_amount = 0
+        answers = qs.answers.all()
+        ans_amount = qs.answers__count
+        for answer in qs.answers.all():
+            correct_amount += int(answer.is_correct)
+        reached_sum += correct_amount/ans_amount
+    return round((reached_sum/perfect_sum)*100, 2)

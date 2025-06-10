@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
-
-from QuizTT.exceptions import InvalidQuizData
+from QuizTT.exceptions import BaseAppException
 from quiz.services import create_quiz, accept_and_decode_csv
 
 class Command(BaseCommand):
@@ -19,5 +18,5 @@ class Command(BaseCommand):
                     with transaction.atomic():  # объявляем транзакцию для создания тестирования
                         create_quiz(accept_and_decode_csv(f))
                 except Exception as e:
-                    raise InvalidQuizData()
+                    raise BaseAppException("неверные данные в CSV файле")
             print("Файл импортирован")

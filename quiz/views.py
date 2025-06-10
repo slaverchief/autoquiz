@@ -67,7 +67,7 @@ class UploadCSVView(View):
         try:
             with transaction.atomic():  # объявляем транзакцию для создания тестирования
                 create_quiz(accept_and_decode_csv(csv_file))
-        except Exception as e:
+        except AssertionError as e:
             raise BaseAppException("допущена ошибка в CSV файле или файл неправильного расширения")
         return HttpResponse()
 
@@ -81,3 +81,7 @@ class GetAnswersView(APIView):
 
     def get(self, request, pk):
         return Response(data=get_quiz_with_answers(pk, request.user))
+
+    def post(self, request, pk):
+        res = count_grade(pk, request.user)
+        return Response(res)
