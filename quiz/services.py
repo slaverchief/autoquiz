@@ -11,7 +11,7 @@ from .serializers import QuizWithAnswersSerializer
 
 def accept_and_decode_csv(csv_file: typing.Union[File, TextIOWrapper]) -> typing.Optional[list]:
     """
-    получает на вход файл, проверяет, является ли он типом csv и извлекает из него данные в удобном видеаф
+    Получает на вход файл, проверяет, является ли он типом csv и извлекает из него данные в удобном видеаф
     """
     if not csv_file.name.endswith('.csv'):
         return
@@ -35,7 +35,7 @@ def accept_and_decode_csv(csv_file: typing.Union[File, TextIOWrapper]) -> typing
 
 def create_question(quiz: Quiz, text: str, qtype: int, choices: list[str], corrects: list[str]):
     """
-    создает конкретный экземпляр вопроса
+    Создает конкретный экземпляр вопроса
     """
     corrects = set(corrects) # переводим в тип сет для ускорения(поиск в сете ведётся за O(1))
     question = Question.objects.create(content=text, quiz=quiz, type=qtype)
@@ -47,7 +47,7 @@ def create_question(quiz: Quiz, text: str, qtype: int, choices: list[str], corre
 
 def create_quiz(data: list):
     """
-    создает конкретный экземпляр тестирования
+    Создает конкретный экземпляр тестирования
     """
     quiz = Quiz.objects.create(name=data[0][0])  # вынимаем test_title
     for vals in data:
@@ -59,7 +59,7 @@ def create_quiz(data: list):
 
 def make_a_choice(data: dict, user: CustomUser):
     """
-    создает конкретный экземпляр ответа на вопрос
+    Создает конкретный экземпляр ответа на вопрос
     """
     question = Question.objects.get(pk=data['question'])
     quiz = question.quiz
@@ -78,7 +78,7 @@ def make_a_choice(data: dict, user: CustomUser):
 
 def get_quiz_with_answers(quiz_pk: int, user: CustomUser):
     """
-    выполняет выборку с объектом тестирования и ответами на его вопросы
+    Выполняет выборку с объектом тестирования и ответами на его вопросы
     """
     quiz = Quiz.objects.get(pk=quiz_pk)
     questions = quiz.questions.all()
