@@ -1,4 +1,4 @@
-from django.db import transaction, connection
+from django.db import transaction, connection, IntegrityError
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse
@@ -54,6 +54,8 @@ class PerformChoiceApiView(CreateAPIView):
                 return Response(status=201)
         except BaseAppException as e:
             raise BaseAppException(e)
+        except IntegrityError as e:
+            raise BaseAppException("вы уже ответили на этот вопрос")
         except Exception as e:
             raise BaseAppException("допущена ошибка при отправлении ответа на вопрос")
 

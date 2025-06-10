@@ -108,6 +108,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'QuizTT.middlewares.CustomExceptionsHandler'
 ]
 
 ROOT_URLCONF = 'QuizTT.urls'
