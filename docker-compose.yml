@@ -1,0 +1,18 @@
+services:
+  web:
+    env_file: "vars.env"
+    environment:
+      - POSTGRES_HOST=pgdb
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    build: .
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - pgdb
+
+  pgdb:
+    image: postgres
+    env_file: "vars.env"
+    container_name: pgdb

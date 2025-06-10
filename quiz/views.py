@@ -12,7 +12,7 @@ from quiz.serializers import *
 from quiz.services import *
 from quiz.models import *
 
-QUIZ_PK_PARAM = OpenApiParameter(name="id", location=OpenApiParameter.PATH, type=int, required=True,description="ID конкретного теcта") # параметр схемы для описания параметра pk объекта тестаялара
+QUIZ_PK_PARAM = OpenApiParameter(name="id", location=OpenApiParameter.PATH, type=int, required=True,description="ID конкретного теcта") # параметр схемы для описания параметра pk объекта теста
 
 
 class QuizApiView(ListAPIView):
@@ -49,7 +49,7 @@ class PerformChoiceApiView(CreateAPIView):
         data = request.data
         user = request.user
         try:
-            with transaction.atomic():  # объявляем транзакцию для создания тестирования
+            with transaction.atomic():
                 make_a_choice(data, user)
                 return Response(status=201)
         except BaseAppException as e:
