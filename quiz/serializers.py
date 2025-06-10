@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import *
-from rest_framework.fields import empty
 
 class ChoiceSerializer(serializers.ModelSerializer):
     """
@@ -27,6 +26,10 @@ class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = '__all__'
+        extra_kwargs = {
+            'users_passed': {'write_only': True}
+        }
+
 
 class QuestionUserSerializer(serializers.ModelSerializer):
     """
