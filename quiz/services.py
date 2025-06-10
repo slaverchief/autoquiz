@@ -4,14 +4,17 @@ from io import TextIOWrapper
 from django.core.files import File
 from .models import *
 
-def accept_and_decode_csv(csv_file: File) -> typing.Optional[list]:
+def accept_and_decode_csv(csv_file: typing.Union[File, TextIOWrapper]) -> typing.Optional[list]:
     """
     получает на вход файл, проверяет, является ли он типом csv и извлекает из него данные в удобном видеаф
     """
     if not csv_file.name.endswith('.csv'):
         return
     try:
-        decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+        if isinstance(csv_file, TextIOWrapper):
+            decoded_file = csv_file
+        else:
+            decoded_file = TextIOWrapper(csv_file.file, encoding='utf-8')
         reader = csv.DictReader(decoded_file)
         data = []
         for row in reader:

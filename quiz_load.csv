@@ -1,0 +1,7 @@
+test_title,question_text,question_type,choices,correct_answers
+Сети,Сколько уровней в OSI?,3,"3|4|7","7"
+Сети,Сколько уровней в TCP/IP?,3,"11|4|7","4"
+Сети,Какие 2 протокола наиболее популярны на транспортном уровне?,3,"UDP и TCP|HTTP и FTP|SMTP и TCP","UDP и TCP"
+Сети,В каких из следующих наборов комманд есть несуществующие в CISCO IOS?,3,"show run, conf t, show running-config|ping, makeremotelink, tracert|showroute, show ip ospf, ospf_kill","show running-config|ping, makeremotelink, tracert|showroute, show ip ospf, ospf_kill"
+
+
