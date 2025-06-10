@@ -2,13 +2,14 @@ from django.db import transaction, connection
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse
+from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import  Response
 from QuizTT.exceptions import BaseAppException
 from quiz.serializers import *
-from quiz.services import accept_and_decode_csv, create_quiz, make_a_choice
-from .models import *
+from quiz.services import *
+from quiz.models import *
 
 class QuizApiView(ListAPIView):
     """
@@ -71,3 +72,12 @@ class UploadCSVView(View):
         return HttpResponse()
 
 
+class GetAnswersView(APIView):
+    """
+    view для получения конкретного объекта тестирования вместе с ответами на вопрос от запросившего пользователя
+    """
+    serializer_class = QuizWithAnswersSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, pk):
+        return Response(data=get_quiz_with_answers(pk, request.user))

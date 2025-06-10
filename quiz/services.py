@@ -3,6 +3,8 @@ import typing
 from io import TextIOWrapper
 from django.core.files import File
 from .models import *
+from .serializers import QuizWithAnswersSerializer
+
 
 def accept_and_decode_csv(csv_file: typing.Union[File, TextIOWrapper]) -> typing.Optional[list]:
     """
@@ -41,7 +43,7 @@ def create_question(quiz: Quiz, text: str, qtype: int, choices: list[str], corre
         c.save()
         question.choices.add(c)
 
-def create_quiz(data):
+def create_quiz(data: list):
     """
     создает конкретный экземпляр тестирования
     """
@@ -53,7 +55,7 @@ def create_quiz(data):
         corrects = vals[4]
         create_question(quiz, text, qtype, choices, corrects)
 
-def make_a_choice(data, user):
+def make_a_choice(data: dict, user: CustomUser):
     """
     создает конкретный экземпляр ответа на вопрос
     """
@@ -67,3 +69,13 @@ def make_a_choice(data, user):
     m = QuestionUser.objects.create(user=user, question=question)
     m.answers.set(data['answers'])
     m.save()
+
+def get_quiz_with_answers(quiz_pk: int, user: CustomUser):
+    """
+    выполняет выборку с объектом тестирования и ответами на его вопросы
+    """
+    quiz = Quiz.objects.get(pk=quiz_pk)
+    questions = quiz.questions.all()
+    qs = QuestionUser.objects.filter(user=user, question__in=questions)
+    s = QuizWithAnswersSerializer({"quiz": quiz, "questions": qs})
+    return s.data
