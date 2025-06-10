@@ -2,13 +2,12 @@ from django.contrib.auth.models import UserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password
 from django.apps import apps
-from django.db import models
 
-
+# Переписан класс менеджера, дабы не приходилось вводить email при суперпользователя
 class CustomManager(UserManager):
     def _create_user_object(self, username, email, password, **extra_fields):
         if not username:
-            raise ValueError("The given username must be set")
+            raise ValueError("Нужно ввести имя пользователя")
         GlobalUserModel = apps.get_model(
             self.model._meta.app_label, self.model._meta.object_name
         )
@@ -24,5 +23,4 @@ class CustomUser(AbstractUser):
     date_joined = None
     REQUIRED_FIELDS = []
     EMAIL_FIELD = None
-
     objects = CustomManager()

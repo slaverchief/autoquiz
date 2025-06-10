@@ -5,8 +5,7 @@ from authsys.models import CustomUser
 # модель конкретного тестирования
 class Quiz(models.Model):
     name = models.CharField(max_length=255, unique=True)
-
-
+    users_passed = models.ManyToManyField(CustomUser, related_name="tests_passed", blank=True)
 
     def __str__(self):
         return self.name
@@ -37,3 +36,4 @@ class QuestionUser(models.Model):
 
     class Meta:
         unique_together = ('question', 'user')
+

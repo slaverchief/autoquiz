@@ -52,6 +52,8 @@ class PerformChoiceApiView(CreateAPIView):
             with transaction.atomic():  # объявляем транзакцию для создания тестирования
                 make_a_choice(data, user)
                 return Response(status=201)
+        except BaseAppException as e:
+            raise BaseAppException(e)
         except Exception as e:
             raise BaseAppException("допущена ошибка при отправлении ответа на вопрос")
 
@@ -90,7 +92,7 @@ class GetAnswersView(APIView):
     def get(self, request, pk: str):
         return Response(data=get_quiz_with_answers(pk, request.user))
 
-    @extend_schema(description="Эндпоинт для подсчёта оценки для конкретного теста",
+    @extend_schema(description="Эндпоинт для подсчёта оценки для конкретного теста и его завершения",
                    responses = {200: {"type": "integer"}},
                    parameters=[QUIZ_PK_PARAM])
     def post(self, request, pk):

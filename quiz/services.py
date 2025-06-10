@@ -4,6 +4,7 @@ from io import TextIOWrapper
 from django.core.files import File
 from django.db.models import Count
 
+from QuizTT.exceptions import BaseAppException
 from .models import *
 from .serializers import QuizWithAnswersSerializer
 
@@ -61,6 +62,9 @@ def make_a_choice(data: dict, user: CustomUser):
     создает конкретный экземпляр ответа на вопрос
     """
     question = Question.objects.get(pk=data['question'])
+    quiz = question.quiz
+    if user in quiz.users_passed.all():
+        raise BaseAppException("вы уже завершили этот тест")
     choices = set([obj.pk for obj in question.choices.all()])  # создаем сет вариантов ответа для того чтобы ускорить выборку
     answers = data['answers']
     # если в ответе пользователь указывает вариант, который не предусмотрен в тесте, это воспринимается как ошибка
@@ -90,6 +94,8 @@ def count_grade(quiz_pk: int, user: CustomUser):
     Достигнутая сумма делится на количество вопросов в тесте, умножается на 100 и округляется до 2 знаков.
     """
     quiz = Quiz.objects.get(pk=quiz_pk)
+    if user not in quiz.users_passed.all():
+        quiz.users_passed.add(user)
     questions = quiz.questions.all()
     perfect_sum = len(questions)*1
     objects = QuestionUser.objects.filter(user=user, question__in=questions).select_related("question").prefetch_related('answers').annotate(Count("answers"))
