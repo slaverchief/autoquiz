@@ -2,6 +2,7 @@ from django.db import transaction, connection
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -11,9 +12,12 @@ from quiz.serializers import *
 from quiz.services import *
 from quiz.models import *
 
+QUIZ_PK_PARAM = OpenApiParameter(name="id", location=OpenApiParameter.PATH, type=int, required=True,description="ID конкретного теcта") # параметр схемы для описания параметра pk объекта тестаялара
+
+
 class QuizApiView(ListAPIView):
     """
-    для вывода списка всех квизов
+    Эндпоинт для вывода списка всех доступных тестов
     """
     serializer_class = QuizSerializer
 
@@ -22,16 +26,20 @@ class QuizApiView(ListAPIView):
 
 class QuestionApiView(ListAPIView):
     """
-    для вывода списка всех вопросов для конкретного квиза
+    Эндпоинт для вывода списка всех вопросов для конкретного теста
     """
     serializer_class = QuestionSerializer
+
+    @extend_schema(parameters=[QUIZ_PK_PARAM])
+    def get(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
 
     def get_queryset(self):
         return Question.objects.filter(quiz=self.kwargs['pk'])
 
 class PerformChoiceApiView(CreateAPIView):
     """
-    view для создания экземпляра ответа на вопрос
+    Эндпоинт для ответа на вопрос
     """
     permission_classes = (IsAuthenticated, )
     model = QuestionUser
@@ -49,7 +57,7 @@ class PerformChoiceApiView(CreateAPIView):
 
 class UploadCSVView(View):
     """
-    view для загрузки CSV на сервер
+    Эндпоинт для загрузки CSV на сервер
     """
     # доступ только для суперпользователей
     def dispatch(self, request, *args, **kwargs):
@@ -74,14 +82,17 @@ class UploadCSVView(View):
 
 class GetAnswersView(APIView):
     """
-    view для получения конкретного объекта тестирования вместе с ответами на вопрос от запросившего пользователя
+    Эндроинт для получения конкретного объекта тестирования вместе с ответами на вопрос от запросившего пользователя
     """
     serializer_class = QuizWithAnswersSerializer
     permission_classes = (IsAuthenticated, )
-
-    def get(self, request, pk):
+    @extend_schema(parameters=[QUIZ_PK_PARAM])
+    def get(self, request, pk: str):
         return Response(data=get_quiz_with_answers(pk, request.user))
 
+    @extend_schema(description="Эндпоинт для подсчёта оценки для конкретного теста",
+                   responses = {200: {"type": "integer"}},
+                   parameters=[QUIZ_PK_PARAM])
     def post(self, request, pk):
         res = count_grade(pk, request.user)
         return Response(res)

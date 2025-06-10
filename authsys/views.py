@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -8,6 +9,7 @@ class UserView(APIView):
     serializer_class = UserSerializer
 
     # получение текущего пользователя
+    @extend_schema(description="Эндпоинт для получения ID текущего авторизованного пользователя")
     def get(self, request):
         if not request.user.is_authenticated:
             return Response(status=403)
@@ -15,6 +17,7 @@ class UserView(APIView):
         return Response(serializer.data)
 
     # запрос на создание пользователя
+    @extend_schema(description="Эндпоинт для создания пользователя")
     def post(self, request: Request, *args, **kwargs) -> Response:
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
