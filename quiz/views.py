@@ -2,9 +2,29 @@ from django.db import transaction
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse
-
+from rest_framework.generics import ListAPIView
 from QuizTT.exceptions import InvalidQuizData
+from quiz.serializers import *
 from quiz.services import accept_and_decode_csv, create_quiz
+from .models import *
+
+class QuizApiView(ListAPIView):
+    """
+    для вывода списка всех квизов
+    """
+    serializer_class = QuizSerializer
+
+    def get_queryset(self):
+        return Quiz.objects.all()
+
+class QuestionApiView(ListAPIView):
+    """
+    для вывода списка всех вопросов для конкретного квиза
+    """
+    serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        return Question.objects.filter(quiz=self.kwargs['pk'])
 
 
 class UploadCSVView(View):
