@@ -1,11 +1,13 @@
-from django.db import transaction
+from django.db import transaction, connection
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse
-from rest_framework.generics import ListAPIView
-from QuizTT.exceptions import InvalidQuizData
+from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import  Response
+from QuizTT.exceptions import BaseAppException
 from quiz.serializers import *
-from quiz.services import accept_and_decode_csv, create_quiz
+from quiz.services import accept_and_decode_csv, create_quiz, make_a_choice
 from .models import *
 
 class QuizApiView(ListAPIView):
@@ -26,6 +28,23 @@ class QuestionApiView(ListAPIView):
     def get_queryset(self):
         return Question.objects.filter(quiz=self.kwargs['pk'])
 
+class PerformChoiceApiView(CreateAPIView):
+    """
+    view для создания экземпляра ответа на вопрос
+    """
+    permission_classes = (IsAuthenticated, )
+    model = QuestionUser
+    serializer_class = QuestionUserSerializer
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        user = request.user
+        try:
+            with transaction.atomic():  # объявляем транзакцию для создания тестирования
+                make_a_choice(data, user)
+                return Response(status=201)
+        except Exception as e:
+            raise BaseAppException("допущена ошибка при отправлении ответа на вопрос")
 
 class UploadCSVView(View):
     """
@@ -43,7 +62,7 @@ class UploadCSVView(View):
             with transaction.atomic():  # объявляем транзакцию для создания тестирования
                 create_quiz(accept_and_decode_csv(csv_file))
         except Exception as e:
-            raise InvalidQuizData()
+            raise BaseAppException("допущена ошибка в CSV файле или файл неправильного расширения")
         return HttpResponse()
 
 

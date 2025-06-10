@@ -29,6 +29,9 @@ def accept_and_decode_csv(csv_file: typing.Union[File, TextIOWrapper]) -> typing
         return
 
 def create_question(quiz: Quiz, text: str, qtype: int, choices: list[str], corrects: list[str]):
+    """
+    создает конкретный экземпляр вопроса
+    """
     corrects = set(corrects) # переводим в тип сет для ускорения(поиск в сете ведётся за O(1))
     question = Question.objects.create(content=text, quiz=quiz, type=qtype)
     for choice in choices:
@@ -39,6 +42,9 @@ def create_question(quiz: Quiz, text: str, qtype: int, choices: list[str], corre
         question.choices.add(c)
 
 def create_quiz(data):
+    """
+    создает конкретный экземпляр тестирования
+    """
     quiz = Quiz.objects.create(name=data[0][0])  # вынимаем test_title
     for vals in data:
         text = vals[1]
@@ -46,3 +52,18 @@ def create_quiz(data):
         choices = vals[3]
         corrects = vals[4]
         create_question(quiz, text, qtype, choices, corrects)
+
+def make_a_choice(data, user):
+    """
+    создает конкретный экземпляр ответа на вопрос
+    """
+    question = Question.objects.get(pk=data['question'])
+    choices = set([obj.pk for obj in question.choices.all()])  # создаем сет вариантов ответа для того чтобы ускорить выборку
+    answers = data['answers']
+    # если в ответе пользователь указывает вариант, который не предусмотрен в тесте, это воспринимается как ошибка
+    for ans in answers:
+        if ans not in choices:
+            raise
+    m = QuestionUser.objects.create(user=user, question=question)
+    m.answers.set(data['answers'])
+    m.save()
