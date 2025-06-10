@@ -50,6 +50,11 @@ class UploadCSVView(View):
     """
     view для загрузки CSV на сервер
     """
+    # доступ только для суперпользователей
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponse(status=403)
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
         return render(request, 'quiz/upload.html')
