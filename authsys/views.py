@@ -4,6 +4,13 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.request import Request
 from .serializers import *
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+class LoginView(TokenObtainPairView):
+    """
+    Авторизует пользователя по логину и паролю
+    """
+
 
 class UserView(APIView):
     serializer_class = UserSerializer

@@ -89,6 +89,8 @@ class GetAnswersView(APIView):
     Эндроинт для получения конкретного объекта тестирования вместе с ответами на вопрос от запросившего пользователя
     """
     permission_classes = (IsAuthenticated, )
+    serializer_class = None
+
     @extend_schema(parameters=[QUIZ_PK_PARAM])
     def get(self, request, pk: str):
         return Response(data=get_quiz_with_answers(pk, request.user))
