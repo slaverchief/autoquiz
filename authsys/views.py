@@ -16,7 +16,6 @@ class LoginView(TokenObtainPairView):
 
 class UserView(APIView):
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated, )
 
     # получение текущего пользователя
     @extend_schema(description="Эндпоинт для получения ID текущего авторизованного пользователя")
