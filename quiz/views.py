@@ -19,6 +19,8 @@ class QuizApiView(ListAPIView):
     Эндпоинт для вывода списка всех доступных тестов
     """
     serializer_class = QuizSerializer
+    permission_classes = ()
+    authentication_classes = ()
 
     def get_queryset(self):
         return Quiz.objects.all()
@@ -28,6 +30,8 @@ class QuestionApiView(ListAPIView):
     Эндпоинт для вывода списка всех вопросов для конкретного теста
     """
     serializer_class = QuestionSerializer
+    permission_classes = ()
+    authentication_classes = ()
 
     @extend_schema(parameters=[QUIZ_PK_PARAM])
     def get(self, *args, **kwargs):
@@ -62,6 +66,9 @@ class UploadCSVView(View):
     """
     Эндпоинт для загрузки CSV на сервер
     """
+    permission_classes = ()
+    authentication_classes = ()
+
     # доступ только для суперпользователей
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_superuser:
