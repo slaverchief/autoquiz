@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import  Response
 from quiz.serializers import *
 from quiz.services import *
@@ -19,7 +19,6 @@ class QuizApiView(ListAPIView):
     Эндпоинт для вывода списка всех доступных тестов
     """
     serializer_class = QuizSerializer
-    permission_classes = ()
     authentication_classes = ()
 
     def get_queryset(self):
@@ -30,7 +29,6 @@ class QuestionApiView(ListAPIView):
     Эндпоинт для вывода списка всех вопросов для конкретного теста
     """
     serializer_class = QuestionSerializer
-    permission_classes = ()
     authentication_classes = ()
 
     @extend_schema(parameters=[QUIZ_PK_PARAM])
@@ -44,7 +42,7 @@ class PerformChoiceApiView(CreateAPIView):
     """
     Эндпоинт для ответа на вопрос
     """
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     model = QuestionUser
     serializer_class = QuestionUserSerializer
 
@@ -70,8 +68,6 @@ class UploadCSVView(View):
     """
     Эндпоинт для загрузки CSV на сервер
     """
-    permission_classes = ()
-    authentication_classes = ()
 
     # доступ только для суперпользователей
     def dispatch(self, request, *args, **kwargs):
