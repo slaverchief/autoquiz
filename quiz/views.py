@@ -78,7 +78,7 @@ class UploadCSVView(View):
         try:
             with transaction.atomic():  # объявляем транзакцию для создания тестирования
                 create_quiz(accept_and_decode_csv(csv_file))
-        except AssertionError as e:
+        except Exception as e:
             raise BaseAppException("допущена ошибка в CSV файле или файл неправильного расширения")
         return HttpResponse()
 
