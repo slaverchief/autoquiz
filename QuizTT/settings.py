@@ -47,8 +47,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=9999),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=9999),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5) if not DEBUG else timedelta(days=1000), # если включен режим отладки, срок истечения токена увеличивается до 1000 дней
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=30),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": False,
