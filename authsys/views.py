@@ -1,5 +1,5 @@
 from drf_spectacular.utils import extend_schema
-from rest_framework.decorators import authentication_classes
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -27,7 +27,7 @@ class UserView(APIView):
         return Response(serializer.data)
 
     # запрос на создание пользователя
-    @extend_schema(description="Эндпоинт для создания пользователя", auth=[])
+    @extend_schema(description="Эндпоинт для создания пользователя", auth=[], responses=TokenObtainPairSerializer)
     def post(self, request: Request, *args, **kwargs) -> Response:
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
