@@ -48,6 +48,10 @@ class PerformChoiceApiView(CreateAPIView):
     model = QuestionUser
     serializer_class = QuestionUserSerializer
 
+    @extend_schema(responses = {201: None},)
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
     def create(self, request, *args, **kwargs):
         data = request.data
         user = request.user
