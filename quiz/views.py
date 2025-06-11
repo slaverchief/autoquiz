@@ -99,7 +99,7 @@ class GetAnswersView(APIView):
     Эндроинт для получения конкретного объекта тестирования вместе с ответами на вопрос от запросившего пользователя
     """
     permission_classes = (IsAuthenticated, )
-    serializer_class = None
+    serializer_class = QuizWithAnswersSerializer
 
     @extend_schema(parameters=[QUIZ_PK_PARAM])
     def get(self, request, pk: str):
@@ -107,6 +107,7 @@ class GetAnswersView(APIView):
 
     @extend_schema(description="Эндпоинт для подсчёта оценки для конкретного теста и его завершения",
                    responses = {200: {"type": "integer"}},
+                   request = None,
                    parameters=[QUIZ_PK_PARAM])
     def post(self, request, pk):
         res = count_grade(pk, request.user)
