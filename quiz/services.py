@@ -11,7 +11,7 @@ from .serializers import QuizWithAnswersSerializer
 
 def accept_and_decode_csv(csv_file: typing.Union[File, TextIOWrapper]) -> typing.Optional[list]:
     """
-    Получает на вход файл, проверяет, является ли он типом csv и извлекает из него данные в удобном видеаф
+    Получает на вход файл, проверяет, является ли он типом csv и извлекает из него данные в удобном виде
     """
     if not csv_file.name.endswith('.csv'):
         return
@@ -47,7 +47,7 @@ def create_question(quiz: Quiz, text: str, qtype: int, choices: list[str], corre
 
 def create_quiz(data: list):
     """
-    Создает конкретный экземпляр тестирования
+    Создает конкретный экземпляр теста
     """
     quiz = Quiz.objects.create(name=data[0][0])  # вынимаем test_title
     for vals in data:
@@ -59,7 +59,7 @@ def create_quiz(data: list):
 
 def make_a_choice(data: dict, user: CustomUser):
     """
-    Создает конкретный экземпляр ответа на вопрос
+    Создает конкретный экземпляр ответа на вопрос(регистрирует ответ на вопрос)
     """
     question = Question.objects.get(pk=data['question'])
     quiz = question.quiz

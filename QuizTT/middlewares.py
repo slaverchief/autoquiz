@@ -3,7 +3,9 @@ from QuizTT.exceptions import *
 
 
 class CustomExceptionsHandler:
-
+    """
+    Middleware для обработки исключений, связанных с правилами бизнес логики приложения
+    """
     def __init__(self, get_response):
         self.get_response = get_response
 

@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password
 from django.apps import apps
 
-# Переписан класс менеджера, дабы не приходилось вводить email при суперпользователя
+# Переписан класс менеджера, дабы не приходилось вводить email при  создании суперпользователя
 class CustomManager(UserManager):
     def _create_user_object(self, username, email, password, **extra_fields):
         if not username:
@@ -17,6 +17,7 @@ class CustomManager(UserManager):
         return user
 
 class CustomUser(AbstractUser):
+    # все ненужные поля обнулены
     first_name = None
     last_name = None
     email = None

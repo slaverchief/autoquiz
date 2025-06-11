@@ -7,7 +7,6 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import  Response
-from QuizTT.exceptions import BaseAppException
 from quiz.serializers import *
 from quiz.services import *
 from quiz.models import *
