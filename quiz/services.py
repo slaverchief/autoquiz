@@ -70,7 +70,7 @@ def make_a_choice(data: dict, user: CustomUser):
     # если в ответе пользователь указывает вариант, который не предусмотрен в тесте, это воспринимается как ошибка
     for ans in answers:
         if ans not in choices:
-            raise
+            raise BaseAppException("нет выбранного варианта ответа")
     m = QuestionUser.objects.create(user=user, question=question)
     m.answers.set(data['answers'])
     m.save()

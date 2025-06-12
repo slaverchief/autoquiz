@@ -6,5 +6,6 @@ urlpatterns = [
     path('quiz/', QuizApiView.as_view()),
     path("quiz/<int:pk>", GetAnswersView.as_view()),
     path('question/<int:pk>', QuestionApiView.as_view()),
-    path('question/', PerformChoiceApiView.as_view())
+    path('choice/<int:pk>', ChoiceAPIView.as_view()),
+
 ]

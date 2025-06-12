@@ -33,11 +33,13 @@ class QuizSerializer(serializers.ModelSerializer):
 
 class QuestionUserSerializer(serializers.ModelSerializer):
     """
-    Сериализатор для объекта выбора ответа в вопросе
+    Сериализатор для ответа пользователя на вопрос
     """
     class Meta:
         model = QuestionUser
-        exclude = ['user', 'id']
+        exclude = ['user']
+        read_only_fields = ['question']
+
 
 class QuizWithAnswersSerializer(serializers.Serializer):
     """

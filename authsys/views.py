@@ -26,15 +26,18 @@ class UserView(APIView):
             return [AllowAny()]
         return super().get_permissions()
 
-    # получение текущего пользователя
-    @extend_schema(description="Эндпоинт для получения ID текущего авторизованного пользователя")
     def get(self, request):
+        """
+        Эндпоинт для получения ID текущего авторизованного пользователя
+        """
         serializer = self.serializer_class(instance=request.user)
         return Response(serializer.data)
 
-    # запрос на создание пользователя
-    @extend_schema(description="Эндпоинт для создания пользователя", auth=[], responses=TokenObtainPairSerializer)
+    @extend_schema(auth=[], responses=TokenObtainPairSerializer)
     def post(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Эндпоинт для создания пользователя
+        """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_obj = serializer.save()

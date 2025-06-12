@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from QuizTT.exceptions import *
 
@@ -15,5 +16,13 @@ class CustomExceptionsHandler:
 
     def process_exception(self, request, exception):
         if isinstance(exception, BaseAppException):
-            return HttpResponse(status=400, content=f"Ошибка со стороны клиента: {exception}")
-        return HttpResponse(status=500, content="Произошла непредвиденная ошибка")
+            status = 400
+            message = f"Ошибка со стороны клиента: {exception}"
+        elif isinstance(exception, ObjectDoesNotExist):
+            status = 400
+            message = f"Объект не найден"
+        else:
+            status = 500
+            message = "Непредвиденная ошибка"
+
+        return HttpResponse(status=status, content=message)
